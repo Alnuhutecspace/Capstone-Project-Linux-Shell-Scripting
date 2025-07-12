@@ -132,4 +132,450 @@ This enhanced Bash script generates customized multiplication tables based on us
 
 ## Conclusion 
 
-In conclusion, these three Bash scripts progressively build upon each other to create a robust and interactive multiplication table generator. The first script introduces basic input validation and looping to allow repeated table generation in either ascending or descending order. The second script adds depth by demonstrating two different looping techniques list-form and C-style for educational variety while maintaining input validation and order selection. The third and most advanced script enhances user control by allowing full, partial, or custom table ranges, integrating comprehensive input validation and flexible output options. Together, these scripts showcase key Bash scripting concepts such as user input handling, conditional logic, loops, and function modularity, making them a valuable learning tool for beginners and a practical utility for simple arithmetic tasks.
+In conclusion, these three Bash scripts progressively build upon each other to create a robust and interactive multiplication table generator. The first script introduces basic input validation and looping to allow repeated table generation in either ascending or descending order. The second script adds depth by demonstrating two different looping techniques list-form and C-style for educational variety while maintaining input validation and order selection. The third and most advanced script enhances user control by allowing full, partial, or custom table ranges, integrating comprehensive input validation and flexible output options. Together, these scripts showcase key Bash scripting concepts such as user input handling, conditional logic, loops, and function modularity, making them a valuable learning tool for beginners and a practical utility for simple arithmetic tasks. 
+
+
+# Code Explanation
+
+## Bash Multiplication Table Script 
+
+Bash script **line by line**, step by step. This script prompts the user for a number, validates the input, asks if they want the multiplication table in ascending or descending order, and then displays it in **two styles**: list-form and C-style loop.
+
+### **Header: Shebang line**
+
+```bash
+#!/bin/bash
+```
+
+- Tells the system to use the **Bash shell** to execute the script.
+
+---
+
+## Function: Validate user input
+
+```bash
+is_valid_number() {
+    [[ "$1" =~ ^[0-9]+$ ]]
+}
+```
+
+- `is_valid_number` is a function that checks whether its argument (`$1`) is a **non-negative integer** (e.g., 0, 12, 345).
+
+- `[[ "$1" =~ ^[0-9]+$ ]]` uses a **regular expression** to match only digits (no letters, symbols, or negative signs).
+
+---
+
+## Prompt the user for a number
+
+```bash
+read -p "Enter a number to generate its multiplication table: " number
+```
+
+- Displays a prompt and stores the user’s input into the variable `number`.
+
+---
+
+## Validate the input number
+
+```bash
+if ! is_valid_number "$number"; then
+    echo "Error: Please enter a valid positive number."
+    exit 1
+fi
+```
+
+- Calls the validation function. If the input is **not** valid (`! is_valid_number`), it prints an error and exits with code `1`.
+
+---
+
+## Ask for order preference
+
+```bash
+read -p "Do you want the table in ascending or descending order? (a/d): " order
+```
+
+- Asks the user whether the table should be printed in **ascending** (`a`) or **descending** (`d`) order.
+
+---
+
+## Convert order input to lowercase
+
+```bash
+order=$(echo "$order" | tr '[:upper:]' '[:lower:]')
+```
+
+- Converts any uppercase input (e.g., 'A' or 'D') to lowercase using `tr`.
+
+---
+
+## Validate order choice
+
+```bash
+if [[ "$order" != "a" && "$order" != "d" ]]; then
+    echo "Error: Invalid choice. Please enter 'a' for ascending or 'd' for descending."
+    exit 1
+fi
+```
+
+- Checks if the user typed **anything other than** 'a' or 'd'. If so, shows an error and exits.
+
+---
+
+## Section Heading for List-form Table
+
+```bash
+echo ""
+echo "==============================================="
+echo "  Multiplication Table for $number (List Form)"
+echo "==============================================="
+```
+
+- Prints a nice header to visually separate the output.
+
+---
+
+## List-form Loop to Print Table
+
+```bash
+if [[ "$order" == "d" ]]; then 
+    for i in {10..1}; do
+        echo "$number x $i = $((number * i))"
+    done
+else
+    for i in {1..10}; do
+        echo "$number x $i = $((number * i))"
+    done
+fi
+```
+
+- If user chose **descending** (`d`), loop goes from 10 to 1.
+- Otherwise, it loops from 1 to 10.
+- `{1..10}` is **list-style loop syntax** (only works with fixed numeric ranges).
+- `echo "$number x $i = $((number * i))"` prints the multiplication result.
+
+---
+
+## Section Heading for C-style Table
+
+```bash
+echo ""
+echo "==============================================="
+echo "  Multiplication Table for $number (C-style)"
+echo "==============================================="
+```
+
+- Another section header before using a **C-style for loop**.
+
+---
+
+## C-style For Loop (More Flexible)
+
+```bash
+if [[ "$order" == "d" ]]; then
+    for ((i=10; i>=1; i--)); do
+        echo "$number x $i = $((number * i))"
+    done
+else
+    for ((i=1; i<=10; i++)); do
+        echo "$number x $i = $((number * i))"
+    done
+fi
+```
+
+- C-style `for ((init; condition; increment))` syntax.
+- Used here for the same functionality, but shows a more general-purpose loop style.
+
+---
+
+## Summary of What the Script Does:
+
+1. Prompts user for a number.
+2. Validates that it’s a non-negative integer.
+3. Asks for ascending or descending order.
+4. Prints the multiplication table using **two types of loops**:
+
+   - List-form (`for i in {1..10}`)
+   - C-style (`for ((i=1; i<=10; i++))`)
+
+## Bash Script for Multiplication Table Repeat
+
+This new version of your Bash multiplication table script builds on the original by making it modular, user-friendly, and interactive. Let's go over the differences step by step, highlighting only the parts that differ from your first script. 
+
+## Major Improvements & Differences 
+
+## Function: Validate Input in Range (1–10) 
+
+```Bash
+is_valid_range() {
+    [[ "$1" =~ ^[0-9]+$ ]] && (( $1 >= 1 && $1 <= 10 ))
+}
+```
+- Now, not only does the script validate if it's a number, but it ensures the number is between 1 and 10, inclusive.
+
+- Combines regex and numeric range check in one clean function.
+
+## Function: Get Valid Number (Loop Until Correct)
+
+```bash
+get_valid_number() {
+    while true; do
+        read -p "Enter a number between 1 and 10: " number
+        if is_valid_range "$number"; then
+            break
+        else
+            echo "Invalid input. Please enter a number between 1 and 10."
+        fi
+    done
+}
+```
+
+- Wraps the user input prompt in a while true loop. 
+
+- Keeps asking the user until valid input is given (instead of exiting the program).
+
+## Function: Get Order Choice (Also Looped)
+
+```bash
+get_order_choice() {
+    while true; do
+        read -p "Do you want the table in ascending or descending order? (a/d): " order
+        order=$(echo "$order" | tr '[:upper:]' '[:lower:]')
+
+        if [[ "$order" == "a" || "$order" == "d" ]]; then
+            break
+        else
+            echo "Invalid input. Enter 'a' for ascending or 'd' for descending."
+        fi
+    done
+}
+```
+
+- Now uses a loop to validate the user's choice (a or d).
+
+- Instead of exiting on error, it re-prompts until valid input is received.
+
+## Function: Print Multiplication Table
+
+```bash 
+
+print_multiplication_table() { ...} 
+```
+
+- Similar logic to before, but now inside a dedicated reusable function.
+
+- Makes the script cleaner and more modular.
+
+## Function: Ask to Continue 
+
+```ask_to_continue() {
+    while true; do
+        read -p "Do you want to generate another table? (y/n): " choice
+        ...
+    done
+}
+```
+
+- Completely new feature.
+
+- After generating a table, it asks if the user wants to run again.
+
+- Loop continues if 'y', ends if 'n', re-prompts if input is invalid.
+
+## Main Function Wrapper
+
+```bash
+main() {
+    ...
+    while true; do
+        get_valid_number
+        get_order_choice
+        print_multiplication_table
+
+        if ! ask_to_continue; then
+            echo "Goodbye!"
+            break
+        fi
+    done
+}
+```
+
+- Groups all program logic inside a main function. 
+
+- Loops the entire interaction until the user chooses to quit.
+
+## Execution
+
+```bash 
+
+main
+
+```
+## Updated Multiplication Table
+
+- The script now explicitly calls the main function to begin.
+
+This version enhances your script even further by introducing table type selection, including customizable range support.
+
+Let's explain only the new or changed parts compared to the previous two versions, going step by step. These differences significantly increase user flexibility and script sophistication.
+
+Differences from Previous Versions — Step by Step 
+
+## New Option: Table Type Selector
+
+
+```bash
+
+get_table_type() {
+    ...
+}
+```
+- Users now choose what kind of multiplication table they want:
+
+    - f = Full (1 to 10)
+
+    - p = Partial (1 to 5)
+
+    - c = Custom (user-defined range)
+
+- Uses a while true loop to keep prompting until user gives a valid option.
+
+- Automatically sets start and end based on the user's selection.
+
+- If the user chooses c (custom), it calls a new helper function: get_custom_range.
+
+## New Function: Custom Range Input
+
+```bash
+
+get_custom_range() {
+    ...
+}
+```
+
+- A dedicated function that:
+
+    - Prompts for start and end values (1–10).
+
+    - Validates each input using the existing is_valid_range function.
+
+    - Ensures start <= end.
+
+Why it’s useful:
+
+- Adds customization without complicating the main logic.
+
+- Reuses existing validation to prevent bad input.
+
+## Modified: Table Print Function Now Uses start and end 
+
+```bash
+
+print_multiplication_table() {
+    ...
+    for ((i=start; i<=end; i++)); do
+        ...
+``` 
+
+## What’s Changed: 
+
+- In previous scripts, the table always printed from 1 to 10 (or 10 to 1).
+
+- Now it uses dynamic start and end values:
+
+    - Defined in get_table_type (full, partial, or custom).
+
+    - Adjusts loop direction based on user’s order (a or d). 
+
+## Improved User Interaction Flow (in main)
+
+```bash
+main() {
+    ...
+    get_table_type
+    ...
+}
+```
+
+- The main loop now also calls get_table_type each time, giving users full control every run.
+
+- Clean structure keeps logic easy to read and modify.
+
+## Summary of Syntax Used 
+
+## Concept	Syntax Example	Purpose 
+
+| Concept | Syntax Example  | Purpose |
+| ---------- | ----------- | ---------- |
+| Shebang | `#!/bin/bash`  | Declare interpreter | 
+| Function | `my_func() { ... }` | Encapsulate code logic | 
+| Read input | `read -p "msg" variable` | Get user input | 
+| While loop | `while true; do ... done` | Repeat until break|while true; |
+| For loop | `for ((i=1; i<=10; i++))` |  Iterate over range |
+| If-elif-else | `if ... elif ... else ... fi` | Conditional branching
+| String test | `[[ "$x" == "a" ]]` | Compare string |
+| Regex match | `[[ "$x" =~ ^[0-9]+$ ]]` | Validate format | 
+| Arithematic test | `(( x <= 10 ))` | Numeric comparison |
+| Arithematic eval | `$((x * y))` | Compute math |
+| Lowercase conversion | `tr '[:upper:]' '[:lower:]'` | Normalise user input |
+| Loop control | `break,` `return,` `exit` | Control script/loop flow |
+| Variable usage | $var, ${var} | Access value |
+
+## Comparison: C-style for Loop vs List-form for Loop in Bash 
+
+Both loop styles are used in Bash scripting, but they serve slightly different purposes and have trade-offs. Here's a breakdown of their differences, along with how they apply to your multiplication table scripts. 
+
+## List-form for Loop 
+
+```bash
+for i in {1..10}; do
+    echo "$i"
+done
+```
+
+## Pros: 
+
+- Simple and readable for fixed ranges.
+
+- Great when you know the start and end numbers at script writing time.
+
+## Cons: 
+
+- Static: You cannot use variables inside {} like {1..$end}.
+
+- Doesn't handle dynamic ranges well (like user input).
+
+## Used in: 
+
+- Used in first script (only works well when 1..10 is hardcoded).
+
+## C-style for Loop 
+
+```bash
+for ((i=start; i<=end; i++)); do
+    echo "$i"
+done
+```
+
+## Pros: 
+
+- Flexible and dynamic — supports variables.
+
+- Supports custom increments/decrements, conditions, and complex logic.
+
+- Works well with user-defined input.
+
+## Cons: 
+
+- Slightly more verbose.
+
+- Less readable for beginners.
+
+## Used in: 
+
+- All later versions of your script to handle:
+
+- Ascending or descending order
+
+- Partial and custom table ranges
+
+In conclusion, the progression of your Bash scripts demonstrates a clear enhancement in functionality, structure, and user interactivity. Initially, the script used a simple list-form `for` loop, which was limited to static ranges and less adaptable. As the script evolved, it transitioned to using C-style `for` loops, allowing dynamic ranges, user-defined inputs, and customizable output order. The final version introduced modular functions, input validation, looped user prompts, and support for full, partial, or custom multiplication tables—making it robust and user-friendly. This evolution reflects best practices in Bash scripting, emphasizing flexibility, reusability, and clean design, with C-style loops proving to be the better choice for dynamic, real-world applications.
